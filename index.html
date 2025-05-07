@@ -117,8 +117,8 @@
       const [theme, setTheme] = useState('dark');
       const [activeFilter, setActiveFilter] = useState('Todos');
       const [notifications, setNotifications] = useState([
-        { id: 1, text: 'Nueva campaña de CLAP en tu zona', url: '#', read: false, visible: true },
-        { id: 2, text: 'Tienes una nueva solicitud de amistad', url: '#', read: false, visible: true },
+        { id: 1, title: 'Campaña CLAP', text: 'Nueva campaña de CLAP en tu zona', url: '#', read: false, visible: true },
+        { id: 2, title: 'Solicitud de Amistad', text: 'Tienes una nueva solicitud de amistad', url: '#', read: false, visible: true },
       ]);
       const [messages, setMessages] = useState([
         { id: 1, from: 'Ana López', text: '¡Hola! ¿Cómo estás?', read: false },
@@ -127,26 +127,23 @@
       const [audience, setAudience] = useState('Público');
       const [suggestedOffset, setSuggestedOffset] = useState(0);
       const [clipsOffset, setClipsOffset] = useState(0);
-      const [textColor, setTextColor] = useState('#ffffff');
-      const [selectedEmoji, setSelectedEmoji] = useState(null);
-      const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
-      const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
       // Datos de navegación
       const mainSections = [
         { name: 'Inicio', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
         { name: '1x10', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
         { name: 'Waku Pay', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-        { name: 'Mi Salud', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
+        { name: 'Salud', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
         { name: 'Directorio', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+        { name: 'Alertas', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        { name: 'Trámites', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+        { name: 'Market Social', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
       ];
 
       const dropdownSections = [
         { name: 'Perfil', icon: 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
         { name: 'Patria Info', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
         { name: 'Expresión Ciudadana', icon: 'M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l4-4h2a1.994 1.994 0 001.414-.586' },
-        { name: 'Trámites y Servicios', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-        { name: 'Market Social', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
       ];
 
       const moreOptions = [
@@ -166,7 +163,7 @@
         ],
         '1x10': [
           { name: 'Miembros', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-          { name: 'Chats Grupales', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2hJonah Hill' },
+          { name: 'Chats Grupales', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
           { name: 'Reportes Comunitarios', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
         ],
         'Waku Pay': [
@@ -174,7 +171,7 @@
           { name: 'Transferencias', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
           { name: 'Ahorros', icon: 'M5 11l7-7 7 7M5 19l7-7 7 7' },
         ],
-        'Mi Salud': [
+        'Salud': [
           { name: 'Síntomas', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
           { name: 'Historial Médico', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
           { name: 'Doctores', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
@@ -183,6 +180,18 @@
           { name: 'Instituciones', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a2 2 0 012-2h2a2 2 0 012 2v5m-4 0h4' },
           { name: 'CLAP', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
           { name: 'Familia', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+        ],
+        'Alertas': [
+          { name: 'Emergencias', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+          { name: 'Anuncios', icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.379c.484 0 .951.192 1.293.535M12 19.24V5.882a1.76 1.76 0 013.417-.592l2.147 6.15M18 13a3 3 0 01-3 3m-3 0a3 3 0 01-3-3' },
+        ],
+        'Trámites': [
+          { name: 'Solicitudes', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+          { name: 'Pagos', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+        ],
+        'Market Social': [
+          { name: 'Productos', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
+          { name: 'Servicios', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
         ],
       };
 
@@ -202,15 +211,6 @@
         { name: 'Amigos Concretos', desc: 'El usuario escoge una lista de amigos a los que siempre le enviará contenidos' },
         { name: 'Solo Yo', desc: 'Solo el usuario puede ver la publicación' },
       ];
-
-      const textColors = [
-        { name: 'Blanco', color: '#ffffff' },
-        { name: 'Rojo', color: '#ff0000' },
-        { name: 'Azul', color: '#0000ff' },
-        { name: 'Verde', color: '#008000' },
-      ];
-
-      const emojis = ['😊', '😍', '👍', '😢'];
 
       const filters = [
         'Todos', 'Salud', 'Economía', 'Educación', 'Comunidad', 'CLAP'
@@ -286,10 +286,10 @@
       ];
 
       const clips = [
-        { id: 1, content: 'Recorrido por el mercado comunal', timestamp: new Date(Date.now() - 3600000) },
-        { id: 2, content: 'Entrega de alimentos CLAP', timestamp: new Date(Date.now() - 7200000) },
-        { id: 3, content: 'Jornada de salud gratuita', timestamp: new Date(Date.now() - 86400000) },
-        { id: 4, content: 'Feria de emprendedores', timestamp: new Date(Date.now() - 172800000) },
+        { id: 1, content: 'Recorrido por el mercado comunal', timestamp: new Date(Date.now() - 3600000), link: 'https://mercado.patria.org' },
+        { id: 2, content: 'Entrega de alimentos CLAP', timestamp: new Date(Date.now() - 7200000), link: 'https://clap.patria.org' },
+        { id: 3, content: 'Jornada de salud gratuita', timestamp: new Date(Date.now() - 86400000), link: 'https://salud.patria.org' },
+        { id: 4, content: 'Feria de emprendedores', timestamp: new Date(Date.now() - 172800000), link: 'https://emprendedores.patria.org' },
       ];
 
       const suggestedContacts = [
@@ -305,12 +305,14 @@
           title: "Waku Pay",
           description: "Paga tus servicios con Waku Pay y recibe un 5% de reembolso.",
           image: "https://i.postimg.cc/9FWgqW7p/wakupay.png",
+          link: "https://wakupay.patria.org",
         },
         {
           id: 2,
           title: "Mercado Comunal",
           description: "Productos frescos directamente de los productores locales.",
           image: "https://i.postimg.cc/8C2gykKj/mercado.png",
+          link: "https://mercado.patria.org",
         },
       ];
 
@@ -335,12 +337,10 @@
 
       const handleNotificationClick = (id) => {
         setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-        setIsNotificationOpen(false);
       };
 
       const handleMessageClick = (id) => {
         setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, read: true } : m)));
-        setIsNewMessageOpen(false);
       };
 
       const handleOutsideClick = (e) => {
@@ -350,8 +350,6 @@
         if (!e.target.closest('.notification')) setIsNotificationOpen(false);
         if (!e.target.closest('.create-post') && !e.target.closest('.audience')) setIsCreatePostOpen(false);
         if (!e.target.closest('.audience')) setIsAudienceOpen(false);
-        if (!e.target.closest('.color-picker')) setIsColorPickerOpen(false);
-        if (!e.target.closest('.emoji-picker')) setIsEmojiPickerOpen(false);
         if (!e.target.closest('.more-options')) setIsMoreOptionsOpen(false);
       };
 
@@ -441,26 +439,30 @@
               <nav className={`md:flex items-center ${isMenuOpen ? 'block' : 'hidden'} md:block`} role="navigation">
                 <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 justify-center">
                   {mainSections.map((section) => (
-                    <button
-                      key={section.name}
-                      className={`p-2 rounded ${activeSection === section.name ? 'bg-patria-button' : 'hover-patria-header'}`}
-                      onClick={() => {
-                        setActiveSection(section.name);
-                        setSelectedSubsection(null);
-                        setIsMenuOpen(false);
-                      }}
-                      aria-label={`Ir a ${section.name}`}
-                    >
-                      <svg className={`w-8 h-8 ${activeSection === section.name ? 'text-white' : 'text-patria-icon-header'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={section.icon} />
-                      </svg>
-                    </button>
+                    <div key={section.name} className="relative group">
+                      <button
+                        className={`p-2 rounded ${activeSection === section.name ? 'bg-patria-button' : 'hover-patria-header'}`}
+                        onClick={() => {
+                          setActiveSection(section.name);
+                          setSelectedSubsection(null);
+                          setIsMenuOpen(false);
+                        }}
+                        aria-label={`Ir a ${section.name}`}
+                      >
+                        <svg className={`w-8 h-8 ${activeSection === section.name ? 'text-white' : 'text-patria-icon-header'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={section.icon} />
+                        </svg>
+                      </button>
+                      <span className="absolute left-1/2 -translate-x-1/2 bottom-[-30px] bg-patria-box text-patria-title text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        {section.name}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </nav>
               <div className="flex items-center space-x-4">
                 <div className="relative notification">
-                  <button onClick={() => setIsNotificationOpen(true)} aria-label="Notificaciones">
+                  <button onClick={() => setIsNotificationOpen(!isNotificationOpen)} aria-label="Notificaciones">
                     <svg className={`w-8 h-8 ${isNotificationOpen ? 'text-patria-button' : 'text-patria-icon-header'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -470,9 +472,28 @@
                       </span>
                     )}
                   </button>
+                  {isNotificationOpen && (
+                    <div className="absolute right-0 mt-2 w-80 bg-patria-box rounded-lg shadow-patria z-10">
+                      <p className="text-patria-dropdown-title text-sm px-4 py-2 font-bold">Notificaciones</p>
+                      {notifications.map((notification) => (
+                        <a
+                          key={notification.id}
+                          href={notification.url}
+                          className={`block px-4 py-2 hover:bg-patria-sidebar-selected flex items-center ${notification.read ? 'opacity-50' : ''}`}
+                          onClick={() => handleNotificationClick(notification.id)}
+                        >
+                          <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
+                          <div>
+                            <p className="text-patria-title font-bold text-sm">{notification.title}</p>
+                            <p className="text-patria-sidebar-icon text-xs">{notification.text}</p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="relative new-message">
-                  <button onClick={() => setIsNewMessageOpen(true)} aria-label="Mensajes">
+                  <button onClick={() => setIsNewMessageOpen(!isNewMessageOpen)} aria-label="Mensajes">
                     <svg className={`w-8 h-8 ${isNewMessageOpen ? 'text-patria-button' : 'text-patria-icon-header'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                     </svg>
@@ -482,6 +503,24 @@
                       </span>
                     )}
                   </button>
+                  {isNewMessageOpen && (
+                    <div className="absolute right-0 mt-2 w-80 bg-patria-box rounded-lg shadow-patria z-10">
+                      <p className="text-patria-dropdown-title text-sm px-4 py-2 font-bold">Mensajes</p>
+                      {messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`block px-4 py-2 hover:bg-patria-sidebar-selected flex items-center ${message.read ? 'opacity-50' : ''}`}
+                          onClick={() => handleMessageClick(message.id)}
+                        >
+                          <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
+                          <div>
+                            <p className="text-patria-title font-bold text-sm">{message.from}</p>
+                            <p className="text-patria-sidebar-icon text-xs">{message.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="relative dropdown">
                   <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} aria-label="Menú de perfil">
@@ -594,7 +633,7 @@
               </div>
             </aside>
 
-{/* Main Content (Scrollable) */}
+            {/* Main Content (Scrollable) */}
             <main className="flex-1 px-4 md:ml-60 lg:mr-60 overflow-y-auto bg-patria-bg" role="main">
               {/* Protección Social Card */}
               <section className="bg-patria-social text-white rounded-lg p-6 mb-6 shadow-patria">
@@ -697,6 +736,7 @@
                               <div className="w-full h-64 bg-gray-300 rounded-lg"></div>
                               <p className="text-sm text-patria-title mt-2">{clip.content}</p>
                               <p className="text-xs text-patria-sidebar-icon">{getTimeDisplay(clip.timestamp)}</p>
+                              <a href={clip.link} className="text-patria-button text-sm hover:underline">{clip.link}</a>
                             </div>
                           )}
                         />
@@ -711,8 +751,9 @@
                               {post.type === 'ad' && (
                                 <p className="text-xs text-patria-verified">Publicidad</p>
                               )}
-                              <p className="text-xs text-patria-sidebar-icon">{getTimeDisplay(post.timestamp)}</p>
-                              <p className="text-xs text-patria-sidebar-icon">Categoría: {post.category}</p>
+                              <p className="text-xs text-patria-sidebar-icon">
+                                {getTimeDisplay(post.timestamp)} {post.category} {post.tags.join(' ')}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -720,18 +761,9 @@
                         {(post.media || post.type === 'ad') && (
                           <div className="w-full h-48 bg-gray-300 rounded-lg mb-2"></div>
                         )}
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex space-x-2 mb-2">
-                            {post.tags.map((tag) => (
-                              <span key={tag} className="text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                         {post.type === 'ad' && (
                           <div className="mb-2">
-                            <a href={post.link} className="text-patria-button text-sm">{post.link}</a>
+                            <a href={post.link} className="text-patria-button text-sm hover:underline">{post.link}</a>
                             <div className="flex items-center mt-2">
                               <p className="text-patria-title text-sm flex-1">{post.detailedContent}</p>
                               <button className="bg-patria-button text-white px-4 py-2 rounded hover-patria-button ml-auto">
@@ -788,6 +820,7 @@
                     <div>
                       <p className="text-patria-title font-bold text-sm">{ad.title}</p>
                       <p className="text-sm text-patria-sidebar-icon line-clamp-2">{ad.description}</p>
+                      <a href={ad.link} className="text-patria-button text-sm hover:underline">{ad.link}</a>
                     </div>
                   </div>
                 ))}
