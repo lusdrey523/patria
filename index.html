@@ -1154,6 +1154,68 @@
 );
 };
 
+// Componente para el carrusel
+const Carousel = ({ items, offset, setOffset, itemWidth, visibleItems, renderItem }) => {
+  return (
+    <div className="relative">
+      <div className="flex space-x-4 overflow-x-hidden">
+        {items.slice(offset, offset + visibleItems).map(renderItem)}
+      </div>
+      {offset > 0 && (
+        <button
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-patria-box p-2 rounded-full shadow-patria"
+          onClick={() => setOffset(Math.max(offset - 1, 0))}
+          aria-label="Anterior"
+        >
+          <svg className="w-4 h-4 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      )}
+      {offset < items.length - visibleItems && (
+        <button
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-patria-box p-2 rounded-full shadow-patria"
+          onClick={() => setOffset(Math.min(offset + 1, items.length - visibleItems))}
+          aria-label="Siguiente"
+        >
+          <svg className="w-4 h-4 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+};
+
+// Componente para los filtros
+const Filters = () => (
+  <div className="flex space-x-2 mb-4 overflow-x-auto scrollbar-hidden">
+    {filters.map((filter) => (
+      <button
+        key={filter}
+        className={`px-3 py-1 rounded-full text-sm ${
+          activeFilter === filter
+            ? 'bg-patria-button text-white'
+            : 'bg-patria-box text-patria-title hover:bg-patria-sidebar-selected'
+        }`}
+        onClick={() => setActiveFilter(filter)}
+        aria-label={`Filtrar por ${filter}`}
+      >
+        {filter}
+      </button>
+    ))}
+    <select
+      className="px-3 py-1 rounded-full text-sm bg-patria-box text-patria-title"
+      value={sortOrder}
+      onChange={(e) => setSortOrder(e.target.value)}
+      aria-label="Ordenar publicaciones"
+    >
+      <option value="cronológico">Cronológico</option>
+      <option value="relevancia">Relevancia</option>
+    </select>
+  </div>
+);
+
 // Renderizar la aplicación
 ReactDOM.render(<SocialHome />, document.getElementById('root'));
 </script>
