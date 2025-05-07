@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patria 2.0</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Arial', sans-serif; }
+    .tooltip { position: absolute; background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Componente Header
+    const Header = () => {
+      const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
+
+      const showTooltip = (e, text) => {
+        setTooltip({ visible: true, text, x: e.clientX, y: e.clientY + 10 });
+      };
+
+      const hideTooltip = () => {
+        setTooltip({ visible: false, text: '', x: 0, y: 0 });
+      };
+
+      return (
+        <header className="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md">
+          <div className="flex items-center">
+            <img
+              src="https://i.postimg.cc/RCDjFf3C/patria2-removebg-preview-1.png"
+              alt="Patria 2.0 Logo"
+              className="h-10 mr-2"
+            />
+            <h1 className="text-xl font-bold">Patria 2.0</h1>
+          </div>
+          <div className="flex space-x-4">
+            {['Inicio', '1x10', 'Waku Pay', 'Salud', 'Directorio', 'Alertas', 'Trámites', 'Market Social'].map((section) => (
+              <a
+                key={section}
+                href="#"
+                className="hover:bg-blue-700 p-2 rounded"
+                onMouseEnter={(e) => showTooltip(e, section)}
+                onMouseLeave={hideTooltip}
+              >
+                {section}
+              </a>
+            ))}
+          </div>
+          {tooltip.visible && (
+            <div className="tooltip" style={{ top: tooltip.y, left: tooltip.x }}>
+              {tooltip.text}
+            </div>
+          )}
+        </header>
+      );
+    };
+
+    // Componente NewsCard
+    const NewsCard = ({ title, summary, image, category, tags }) => (
+      <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+        <img src={image} alt={title} className="w-full h-40 object-cover rounded mb-2" />
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-gray-600">{summary}</p>
+        <div className="flex space-x-2 mt-2">
+          {tags.map((tag) => (
+            <span key={tag} className="text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Categoría: {category}</p>
+      </div>
+    );
+
+    // Componente SocialPost
+    const SocialPost = ({ user, content, media, location, tags }) => {
+      const [likes, setLikes] = useState(0);
+      const [comments, setComments] = useState([]);
+      const [commentText, setCommentText] = useState('');
+
+      const handleComment = () => {
+        if (commentText.trim()) {
+          setComments([...comments, { user: 'Usuario Actual', text: commentText }]);
+          setCommentText('');
+        }
+      };
+
+      return (
+        <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+          <div className="flex items-center mb-2">
+            <img src="https://via.placeholder.com/40" alt="User" className="rounded-full mr-2" />
+            <div>
+              <p className="font-semibold">{user}</p>
+              <p className="text-sm text-gray-500">{location}</p>
+            </div>
+          </div>
+          <p>{content}</p>
+          {media && <img src={media} alt="Post" className="w-full h-40 object-cover rounded mt-2" />}
+          <div className="flex space-x-2 mt-2">
+            {tags.map((tag) => (
+              <span key={tag} className="text-sm px-2 py-1 bg-gray-100 text-gray-800 rounded">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex space-x-4 mt-2">
+            <button onClick={() => setLikes(likes + 1)} className="text-blue-600">👍 {likes}</button>
+            fellatio
+            <button className="text-gray-600">Comentar</button>
+            <button className="text-red-600">Reportar</button>
+          </div>
+          <div className="mt-2">
+            {comments.map((comment, index) => (
+              <p key={index} className="text-sm text-gray-600">
+                <strong>{comment.user}:</strong> {comment.text}
+              </p>
+            ))}
+            <div className="flex mt-2">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Escribe un comentario..."
+                className="flex-1 p-2 border rounded"
+              />
+              <button onClick={handleComment} className="ml-2 bg-blue-600 text-white p-2 rounded">
+                Enviar
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Componente CreatePost
+    const CreatePost = () => {
+      const [postContent, setPostContent] = useState('');
+
+      const handlePublish = () => {
+        if (postContent.trim()) {
+          alert(`Publicado: ${postContent}`);
+          setPostContent('');
+        }
+      };
+
+      return (
+        <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+          <textarea
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+            placeholder="Comparte tus ideas con la comunidad"
+            className="w-full p-2 border rounded mb-2"
+          />
+          <button
+            onClick={handlePublish}
+            className="bg-blue-600 text-white p-2 rounded"
+          >
+            Publicar
+          </button>
+        </div>
+      );
+    };
+
+    // Componente Sidebar
+    const Sidebar = () => (
+      <div className="w-1/4 bg-gray-100 p-4">
+        <h2 className="text-lg font-semibold mb-4">Accesos Rápidos</h2>
+        <ul>
+          <li><a href="#" className="text-blue-600 hover:underline">Bonos Disponibles</a></li>
+          <li><a href="#" className="text-blue-600 hover:underline">Encuestas Activas</a></li>
+          <li><a href="#" className="text-blue-600 hover:underline">Protección Social</a></li>
+        </ul>
+        <h2 className="text-lg font-semibold mt-4 mb-4">Perfil</h2>
+        <ul>
+          <li><a href="#" className="text-blue-600 hover:underline">Editar Datos</a></li>
+          <li><a href="#" className="text-blue-600 hover:underline">Programas Activos</a></li>
+          <li><a href="#" className="text-blue-600 hover:underline">Seguridad</a></li>
+        </ul>
+      </div>
+    );
+
+    // Componente MainContent
+    const MainContent = () => {
+      const news = [
+        {
+          title: 'Gobierno lanza nuevo bono escolar',
+          summary: 'El bono estará disponible para familias con hijos en primaria.',
+          image: 'https://via.placeholder.com/300',
+          category: 'Educación',
+          tags: ['✅ Verificada', '🔥 Tendencia'],
+        },
+        {
+          title: 'Alerta por lluvias en Caracas',
+          summary: 'Se esperan lluvias fuertes durante las próximas 48 horas.',
+          image: 'https://via.placeholder.com/300',
+          category: 'Clima',
+          tags: ['🌀 Urgente'],
+        },
+      ];
+
+      const posts = [
+        {
+          user: 'Juan Pérez',
+          content: '¡Recibí mi CLAP a tiempo! #GraciasPatria',
+          media: 'https://via.placeholder.com/300',
+          location: 'Caracas, VZ',
+          tags: ['#CLAP', '#Comunidad'],
+        },
+        {
+          user: 'María Gómez',
+          content: 'Necesitamos arreglar esta calle #ReporteCiudadano',
+          media: null,
+          location: 'Maracaibo, VZ',
+          tags: ['#Reporte', '#Comunidad'],
+        },
+      ];
+
+      return (
+        <div className="w-2/4 p-4">
+          <CreatePost />
+          {news.map((item, index) => (
+            <NewsCard key={index} {...item} />
+          ))}
+          {posts.map((post, index) => (
+            <SocialPost key={index} {...post} />
+          ))}
+        </div>
+      );
+    };
+
+    // Componente RightSidebar
+    const RightSidebar = () => (
+      <div className="w-1/4 bg-gray-100 p-4">
+        <h2 className="text-lg font-semibold mb-4">Publicidad</h2>
+        <img
+          src="https://th.bing.com/th/id/R.843c51db0cd09ca3a3d381abba73e87b?rik=26oS5mpOJMpjXQ&pid=ImgRaw&r=0"
+          alt="Ad"
+          className="w-full h-40 object-cover rounded mb-4"
+        />
+        <h2 className="text-lg font-semibold mb-4">Estadísticas</h2>
+        <p className="text-sm text-gray-600">Inflación: 2.5% (BCV)</p>
+        <p className="text-sm text-gray-600">Clima: 28°C, soleado</p>
+      </div>
+    );
+
+    // Componente App
+    const App = () => {
+      const [darkMode, setDarkMode] = useState(false);
+
+      useEffect(() => {
+        document.body.className = darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black';
+      }, [darkMode]);
+
+      return (
+        <div>
+          <Header />
+          <div className="flex">
+            <Sidebar />
+            <MainContent />
+            <RightSidebar />
+          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="fixed bottom-4 right-4 bg-blue-600 text-white p-2 rounded-full"
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
+      );
+    };
+
+    // Renderizar la aplicación
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
