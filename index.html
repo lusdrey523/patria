@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.10/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
     /* Tema Claro */
     .theme-light {
       --bg-patria-bg: #f6f6f6;
@@ -165,7 +166,7 @@
         ],
         '1x10': [
           { name: 'Miembros', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-          { name: 'Chats Grupales', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z' },
+          { name: 'Chats Grupales', icon: 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2hJonah Hill' },
           { name: 'Reportes Comunitarios', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
         ],
         'Waku Pay': [
@@ -592,7 +593,8 @@
                 </div>
               </div>
             </aside>
- {/* Main Content (Scrollable) */}
+
+{/* Main Content (Scrollable) */}
             <main className="flex-1 px-4 md:ml-60 lg:mr-60 overflow-y-auto bg-patria-bg" role="main">
               {/* Protección Social Card */}
               <section className="bg-patria-social text-white rounded-lg p-6 mb-6 shadow-patria">
@@ -764,6 +766,7 @@
                 ))}
               </section>
             </main>
+
             {/* Sidebar Derecha (Fija) */}
             <aside className="hidden lg:block w-64 bg-patria-sidebar p-4 fixed top-20 right-0 bottom-0 overflow-y-auto" role="complementary">
               {/* Publicidad */}
@@ -774,7 +777,7 @@
                   </svg>
                   Publicidad
                 </h3>
-                {[{ id: 1, title: "Waku Pay", description: "Paga tus servicios con Waku Pay.", image: "https://i.postimg.cc/9FWgqW7p/wakupay.png" }].map((ad) => (
+                {ads.map((ad) => (
                   <div key={ad.id} className="rounded-lg p-3 mb-3 flex items-start bg-patria-box">
                     <img
                       src={ad.image}
@@ -800,6 +803,10 @@
                     Solicitudes de Amistad
                   </h3>
                   <a href="#" className="text-patria-button text-sm hover:underline flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
                     Ver todas
                   </a>
                 </div>
@@ -808,9 +815,15 @@
                   <p className="text-sm text-patria-sidebar-icon">1 amigo en común</p>
                   <div className="flex space-x-2 mt-2">
                     <button className="bg-patria-button text-white px-3 py-1 rounded text-sm hover-patria-button flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
                       Aceptar
                     </button>
                     <button className="bg-patria-delete text-white px-3 py-1 rounded text-sm hover-patria-delete flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                       Eliminar
                     </button>
                   </div>
@@ -821,151 +834,49 @@
               <div className="mb-4 pb-4 border-b border-patria-divider">
                 <h3 className="text-patria-title font-bold mb-2 flex items-center">
                   <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2. public's
-                    <div className="rounded-lg p-3 bg-patria-box">
-                      <p className="text-patria-title font-bold">Ana López</p>
-                      <p className="text-sm text-patria-sidebar-icon">Hoy es su cumpleaños</p>
-                    </div>
-                  </div>
-
-                  {/* Contactos */}
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-patria-title font-bold flex items-center">
-                        <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        Contactos
-                      </h3>
-                      <a href="#" className="text-patria-button text-sm hover:underline flex items-center">
-                        Ver todos
-                      </a>
-                    </div>
-                    {[{ id: 1, name: 'Ana López', online: true }, { id: 2, name: 'Carlos Ramírez', online: false }].map((contact) => (
-                      <div key={contact.id} className="flex items-center p-3 rounded-lg mt-2 bg-patria-box">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
-                        <p className="text-patria-title">{contact.name}</p>
-                        <div className={`w-2 h-2 rounded-full ml-auto ${contact.online ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                      </div>
-                    ))}
-                  </div>
-                </aside>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+                  </svg>
+                  Cumpleaños
+                </h3>
+                <div className="rounded-lg p-3 bg-patria-box">
+                  <p className="text-patria-title font-bold">Ana López</p>
+                  <p className="text-sm text-patria-sidebar-icon">Hoy es su cumpleaños</p>
+                </div>
               </div>
 
-              {/* Pop-ups */}
-              {isNewMessageOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 new-message">
-                  <div className="bg-patria-box rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-patria-title font-bold">Mensajes</h3>
-                      <button onClick={() => setIsNewMessageOpen(false)} aria-label="Cerrar">
-                        <svg className="w-6 h-6 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    {[{ id: 1, from: 'Ana López', text: '¡Hola!', read: false }].map((message) => (
-                      <div key={message.id} className="flex items-center p-2 rounded mb-2 hover:bg-patria-sidebar-selected">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
-                        <div>
-                          <p className="text-patria-title font-bold">{message.from}</p>
-                          <p className="text-sm text-patria-sidebar-icon">{message.text}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Contactos */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-patria-title font-bold flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Contactos
+                  </h3>
+                  <a href="#" className="text-patria-button text-sm hover:underline flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Ver todos
+                  </a>
                 </div>
-              )}
-
-              {isNotificationOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 notification">
-                  <div className="bg-patria-box rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-patria-title font-bold">Notificaciones</h3>
-                      <button onClick={() => setIsNotificationOpen(false)} aria-label="Cerrar">
-                        <svg className="w-6 h-6 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    {[{ id: 1, text: 'Nueva campaña de CLAP', url: '#', read: false, visible: true }].map((notification) => (
-                      <div key={notification.id} className="flex items-center p-2 rounded mb-2 hover:bg-patria-sidebar-selected">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
-                        <a href={notification.url} className="text-patria-title">{notification.text}</a>
-                      </div>
-                    ))}
+                {contacts.map((contact) => (
+                  <div key={contact.id} className="flex items-center p-3 rounded-lg mt-2 bg-patria-box">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
+                    <p className="text-patria-title font-bold">{contact.name}</p>
+                    <div className={`w-2 h-2 rounded-full ml-auto ${contact.online ? 'bg-green-500' : 'bg-gray-500'}`}></div>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
+            </aside>
+          </div>
+        </div>
+      );
+    };
 
-              {isCreatePostOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 create-post">
-                  <div className="bg-patria-box rounded-lg p-6 w-[32rem] max-h-[80vh] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-patria-title font-bold">Crear publicación</h3>
-                      <button onClick={() => setIsCreatePostOpen(false)} aria-label="Cerrar">
-                        <svg className="w-6 h-6 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full mr-2"></div>
-                      <div>
-                        <p className="text-patria-title font-bold">Juan Pérez</p>
-                        <button
-                          className="flex items-center text-patria-title text-sm border border-patria-divider rounded px-2 py-1"
-                          onClick={() => setIsAudienceOpen(true)}
-                        >
-                          {audience}
-                        </button>
-                      </div>
-                    </div>
-                    <textarea
-                      className="w-full p-2 border rounded mb-4 text-patria-title bg-patria-box"
-                      placeholder="¿Qué tienes para compartir?"
-                    ></textarea>
-                    <button className="w-full bg-patria-button text-white px-4 py-2 rounded hover-patria-button">
-                      Publicar
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {isAudienceOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 audience">
-                  <div className="bg-patria-box rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-patria-title font-bold">Seleccionar audiencia</h3>
-                      <button onClick={() => setIsAudienceOpen(false)} aria-label="Cerrar">
-                        <svg className="w-6 h-6 text-patria-title" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    {[{ name: 'Público', desc: 'Cualquiera en Patria' }, { name: 'Amigos', desc: 'Solo amigos' }].map((option) => (
-                      <div
-                        key={option.name}
-                        className="flex items-center p-2 rounded mb-2 hover:bg-patria-sidebar-selected cursor-pointer"
-                        onClick={() => {
-                          setAudience(option.name);
-                          setIsAudienceOpen(false);
-                        }}
-                      >
-                        <div>
-                          <p className="text-patria-title font-bold">{option.name}</p>
-                          <p className="text-sm text-patria-sidebar-icon">{option.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-
-          // Renderizar la aplicación
-          ReactDOM.render(<SocialHome />, document.getElementById('root'));
-        </script>
-      </body>
-    </html>
+    // Renderizado
+    ReactDOM.render(<SocialHome />, document.getElementById('root'));
+  </script>
+</body>
+</html>
