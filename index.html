@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,7 @@
   <title>Patria 2.0</title>
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.10/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Arial', sans-serif; }
@@ -37,6 +37,7 @@
               src="https://i.postimg.cc/RCDjFf3C/patria2-removebg-preview-1.png"
               alt="Patria 2.0 Logo"
               className="h-10 mr-2"
+              onError={(e) => (e.target.src = 'https://via.placeholder.com/40')}
             />
             <h1 className="text-xl font-bold">Patria 2.0</h1>
           </div>
@@ -65,7 +66,12 @@
     // Componente NewsCard
     const NewsCard = ({ title, summary, image, category, tags }) => (
       <div className="bg-white p-4 rounded-lg shadow-md mb-4">
-        <img src={image} alt={title} className="w-full h-40 object-cover rounded mb-2" />
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-40 object-cover rounded mb-2"
+          onError={(e) => (e.target.src = 'https://via.placeholder.com/300')}
+        />
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="text-gray-600">{summary}</p>
         <div className="flex space-x-2 mt-2">
@@ -95,14 +101,26 @@
       return (
         <div className="bg-white p-4 rounded-lg shadow-md mb-4">
           <div className="flex items-center mb-2">
-            <img src="https://via.placeholder.com/40" alt="User" className="rounded-full mr-2" />
+            <img
+              src="https://via.placeholder.com/40"
+              alt="User"
+              className="rounded-full mr-2"
+              onError={(e) => (e.target.src = 'https://via.placeholder.com/40')}
+            />
             <div>
               <p className="font-semibold">{user}</p>
               <p className="text-sm text-gray-500">{location}</p>
             </div>
           </div>
           <p>{content}</p>
-          {media && <img src={media} alt="Post" className="w-full h-40 object-cover rounded mt-2" />}
+          {media && (
+            <img
+              src={media}
+              alt="Post"
+              className="w-full h-40 object-cover rounded mt-2"
+              onError={(e) => (e.target.src = 'https://via.placeholder.com/300')}
+            />
+          )}
           <div className="flex space-x-2 mt-2">
             {tags.map((tag) => (
               <span key={tag} className="text-sm px-2 py-1 bg-gray-100 text-gray-800 rounded">
@@ -112,7 +130,6 @@
           </div>
           <div className="flex space-x-4 mt-2">
             <button onClick={() => setLikes(likes + 1)} className="text-blue-600">👍 {likes}</button>
-            fellatio
             <button className="text-gray-600">Comentar</button>
             <button className="text-red-600">Reportar</button>
           </div>
@@ -243,6 +260,7 @@
           src="https://th.bing.com/th/id/R.843c51db0cd09ca3a3d381abba73e87b?rik=26oS5mpOJMpjXQ&pid=ImgRaw&r=0"
           alt="Ad"
           className="w-full h-40 object-cover rounded mb-4"
+          onError={(e) => (e.target.src = 'https://via.placeholder.com/300')}
         />
         <h2 className="text-lg font-semibold mb-4">Estadísticas</h2>
         <p className="text-sm text-gray-600">Inflación: 2.5% (BCV)</p>
