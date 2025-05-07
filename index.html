@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Tema Claro */
-    .theme-light {
+    :root.theme-light {
       --bg-patria-bg: #f6f6f6;
       --bg-patria-box: #ffffff;
       --shadow-patria: 0 2px 4px #e2e2e2;
@@ -35,10 +35,12 @@
       --bg-patria-contrast: #1a1a1a;
       --text-patria-contrast: #ffffff;
       --text-patria-icon-header: #ffffff;
+      --bg-patria-reaction: #e5e7eb;
+      --hover-patria-reaction: #d1d5db;
     }
 
     /* Tema Oscuro */
-    .theme-dark {
+    :root.theme-dark {
       --bg-patria-bg: #1a1a1a;
       --bg-patria-box: #2a2a2a;
       --shadow-patria: 0 2px 4px #00000033;
@@ -63,6 +65,8 @@
       --bg-patria-contrast: #f6f6f6;
       --text-patria-contrast: #2a2a2a;
       --text-patria-icon-header: #bcbcbc;
+      --bg-patria-reaction: #4b5563;
+      --hover-patria-reaction: #6b7280;
     }
 
     /* Aplicación de variables */
@@ -90,10 +94,14 @@
     .bg-patria-contrast { background-color: var(--bg-patria-contrast); }
     .text-patria-contrast { color: var(--text-patria-contrast); }
     .text-patria-icon-header { color: var(--text-patria-icon-header); }
+    .bg-patria-reaction { background-color: var(--bg-patria-reaction); }
+    .hover-patria-reaction:hover { background-color: var(--hover-patria-reaction); }
     .sidebar-footer { font-size: 10px; }
     .scrollbar-hidden::-webkit-scrollbar { display: none; }
     .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
     body { background-color: var(--bg-patria-bg); font-family: 'Arial', sans-serif; }
+    .reaction-button { transition: transform 0.2s; }
+    .reaction-button:hover { transform: scale(1.1); }
   </style>
 </head>
 <body>
@@ -116,6 +124,7 @@
       const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
       const [theme, setTheme] = useState('dark');
       const [activeFilter, setActiveFilter] = useState('Todos');
+      const [sortOrder, setSortOrder] = useState('cronológico');
       const [notifications, setNotifications] = useState([
         { id: 1, title: 'Campaña CLAP', text: 'Nueva campaña de CLAP en tu zona', url: '#', read: false, visible: true },
         { id: 2, title: 'Solicitud de Amistad', text: 'Tienes una nueva solicitud de amistad', url: '#', read: false, visible: true },
@@ -127,6 +136,19 @@
       const [audience, setAudience] = useState('Público');
       const [suggestedOffset, setSuggestedOffset] = useState(0);
       const [clipsOffset, setClipsOffset] = useState(0);
+
+      // Perfil de usuario simulado
+      const userProfile = {
+        id: 1,
+        name: 'Juan Pérez',
+        cedula: 'V-12345678',
+        verified: true,
+        hasChildren: true,
+        childrenInSchool: 2,
+        hasDisability: false,
+        roles: ['ciudadano', 'miembro_clap'],
+        tags: ['familia', 'clap'],
+      };
 
       // Datos de navegación
       const mainSections = [
@@ -153,13 +175,18 @@
         { name: 'Ayuda', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
       ];
 
-      const subsections = {
+      // Subsecciones posibles en Inicio
+      const allSubsections = {
         'Inicio': [
-          { name: 'Noticias', icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.379c.484 0 .951.192 1.293.535M12 19.24V5.882a1.76 1.76 0 013.417-.592l2.147 6.15M18 13a3 3 0 01-3 3m-3 0a3 3 0 01-3-3' },
-          { name: 'Encuestas', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01' },
-          { name: 'Encuestas CLAP', icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' },
-          { name: 'Organización', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a2 2 0 012-2h2a2 2 0 012 2v5m-4 0h4' },
-          { name: 'Logros', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
+          { name: 'Encuestas CLAP', icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', roles: ['miembro_clap'] },
+          { name: 'Encuestas', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01', roles: ['ciudadano'] },
+          { name: 'Organización', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a2 2 0 012-2h2a2 2 0 012 2v5m-4 0h4', roles: ['miembro_clap'] },
+          { name: 'CLAP', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', roles: ['miembro_clap'] },
+          { name: 'Núcleo Familiar', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', condition: userProfile.hasChildren },
+          { name: 'Escolarización', icon: 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222', condition: userProfile.childrenInSchool > 0 },
+          { name: 'Logros', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z', roles: ['ciudadano'] },
+          { name: 'Hogares de la Patria', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', condition: userProfile.hasChildren },
+          { name: 'Pers. con Discapacidad', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', condition: userProfile.hasDisability },
         ],
         '1x10': [
           { name: 'Miembros', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
@@ -193,6 +220,16 @@
           { name: 'Productos', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z' },
           { name: 'Servicios', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
         ],
+      };
+
+      // Filtrar subsecciones según perfil del usuario
+      const filteredSubsections = {
+        ...allSubsections,
+        'Inicio': allSubsections['Inicio'].filter(subsection => {
+          if (subsection.condition !== undefined) return subsection.condition;
+          if (subsection.roles) return subsection.roles.some(role => userProfile.roles.includes(role));
+          return true;
+        }),
       };
 
       const footerLinks = [
@@ -229,67 +266,119 @@
         {
           id: 1,
           user: 'Ana López',
-          content: '¡Gran jornada de vacunación en el CLAP! 💉',
+          content: '¡Gran jornada de vacunación en el CLAP! 💉 #Salud #CLAP',
+          location: 'CLAP Zona 5',
           timestamp: new Date(Date.now() - 3600000),
           likes: 25,
+          dislikes: 2,
           comments: 10,
           category: 'Salud',
-          tags: ['✅ Verificada']
+          tags: ['✅ Verificada'],
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/vacunacion.jpg' },
+          isFollowing: true,
         },
         {
           id: 2,
           user: 'Gobierno Nacional',
-          content: 'Nueva campaña de bonos Patria, revisa tu cuenta.',
+          content: 'Nueva campaña de bonos Patria, revisa tu cuenta. #Bono #Economía',
+          location: 'Nacional',
           timestamp: new Date(Date.now() - 7200000),
           likes: 150,
+          dislikes: 5,
           comments: 50,
           type: 'official',
           category: 'Economía',
-          tags: ['🔥 Tendencia']
+          tags: ['🔥 Tendencia'],
+          media: { type: 'video', url: 'https://i.postimg.cc/9FWgqW7p/bono.mp4' },
+          isFollowing: false,
         },
         { id: 3, type: 'clip', category: 'Comunidad' },
         {
           id: 4,
           user: 'Waku Pay',
-          content: '¡Paga tus servicios con Waku Pay y recibe un 5% de reembolso!',
+          content: '¡Paga tus servicios con Waku Pay y recibe un 5% de reembolso! #WakuPay #Economía',
+          location: 'Nacional',
           timestamp: new Date(Date.now() - 86400000),
           likes: 80,
+          dislikes: 3,
           comments: 20,
           type: 'ad',
           link: 'https://wakupay.patria.org',
           detailedContent: 'Oferta válida hasta el 31 de mayo de 2025.',
           cta: 'Pagar Ahora',
           category: 'Economía',
-          tags: []
+          tags: [],
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/wakupay.png' },
+          isFollowing: false,
         },
         {
           id: 5,
           user: 'María Gómez',
-          content: 'Necesitamos arreglar esta calle #ReporteCiudadano',
+          content: 'Necesitamos arreglar esta calle #ReporteCiudadano #Comunidad',
+          location: 'Calle 10, Comunidad La Esperanza',
           timestamp: new Date(Date.now() - 172800000),
           likes: 45,
+          dislikes: 1,
           comments: 15,
           category: 'Comunidad',
-          tags: ['🔴 Urgente']
+          tags: ['🔴 Urgente'],
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/calle.jpg' },
+          isFollowing: true,
         },
         {
           id: 6,
           user: 'Ministerio de Educación',
-          content: 'Nuevo bono escolar para familias con hijos en primaria.',
+          content: 'Nuevo bono escolar para familias con hijos en primaria. #Educación #Bono',
+          location: 'Nacional',
           timestamp: new Date(Date.now() - 43200000),
           likes: 200,
+          dislikes: 4,
           comments: 75,
           type: 'official',
           category: 'Educación',
-          tags: ['✅ Verificada', '🔥 Tendencia']
+          tags: ['✅ Verificada', '🔥 Tendencia'],
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/educacion.jpg' },
+          isFollowing: false,
+        },
+      ];
+
+      // Simulación de API de noticias
+      const news = [
+        {
+          id: 1,
+          title: 'Plan Nacional de Vacunación 2025',
+          content: 'El Ministerio de Salud ha anunciado un nuevo plan de vacunación para 2025, que incluye la distribución gratuita de vacunas contra enfermedades comunes en todos los centros de salud del país. Este plan busca beneficiar a más de 5 millones de personas en zonas urbanas y rurales. Además, se implementarán jornadas especiales en comunidades vulnerables.',
+          summary: 'El Ministerio de Salud lanza un plan de vacunación gratuita para 2025, beneficiando a 5 millones de personas.',
+          category: 'Salud',
+          tags: ['#Vacunación', '#Salud'],
+          timestamp: new Date(Date.now() - 3600000),
+          likes: 50,
+          dislikes: 0,
+          comments: 10,
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/vacunacion.jpg' },
+          isFollowing: false,
+        },
+        {
+          id: 2,
+          title: 'Aumento del Bono Patria',
+          content: 'El Gobierno Nacional ha aprobado un incremento del 20% en el Bono Patria para el segundo trimestre de 2025. Este aumento busca apoyar a las familias venezolanas frente a los desafíos económicos. Los beneficiarios recibirán notificaciones a través de la plataforma Patria.',
+          summary: 'El Bono Patria aumenta un 20% para el segundo trimestre de 2025.',
+          category: 'Economía',
+          tags: ['#Bono', '#Economía'],
+          timestamp: new Date(Date.now() - 7200000),
+          likes: 120,
+          dislikes: 2,
+          comments: 30,
+          media: { type: 'image', url: 'https://i.postimg.cc/9FWgqW7p/bono.jpg' },
+          isFollowing: false,
         },
       ];
 
       const clips = [
-        { id: 1, content: 'Recorrido por el mercado comunal', timestamp: new Date(Date.now() - 3600000), link: 'https://mercado.patria.org' },
-        { id: 2, content: 'Entrega de alimentos CLAP', timestamp: new Date(Date.now() - 7200000), link: 'https://clap.patria.org' },
-        { id: 3, content: 'Jornada de salud gratuita', timestamp: new Date(Date.now() - 86400000), link: 'https://salud.patria.org' },
-        { id: 4, content: 'Feria de emprendedores', timestamp: new Date(Date.now() - 172800000), link: 'https://emprendedores.patria.org' },
+        { id: 1, content: 'Recorrido por el mercado comunal', timestamp: new Date(Date.now() - 3600000) },
+        { id: 2, content: 'Entrega de alimentos CLAP', timestamp: new Date(Date.now() - 7200000) },
+        { id: 3, content: 'Jornada de salud gratuita', timestamp: new Date(Date.now() - 86400000) },
+        { id: 4, content: 'Feria de emprendedores', timestamp: new Date(Date.now() - 172800000) },
       ];
 
       const suggestedContacts = [
@@ -302,17 +391,17 @@
       const ads = [
         {
           id: 1,
-          title: "Waku Pay",
-          description: "Paga tus servicios con Waku Pay y recibe un 5% de reembolso.",
-          image: "https://i.postimg.cc/9FWgqW7p/wakupay.png",
-          link: "https://wakupay.patria.org",
+          title: 'Waku Pay',
+          description: 'Paga tus servicios con Waku Pay y recibe un 5% de reembolso.',
+          image: 'https://i.postimg.cc/9FWgqW7p/wakupay.png',
+          link: 'https://wakupay.patria.org',
         },
         {
           id: 2,
-          title: "Mercado Comunal",
-          description: "Productos frescos directamente de los productores locales.",
-          image: "https://i.postimg.cc/8C2gykKj/mercado.png",
-          link: "https://mercado.patria.org",
+          title: 'Mercado Comunal',
+          description: 'Productos frescos directamente de los productores locales.',
+          image: 'https://i.postimg.cc/8C2gykKj/mercado.png',
+          link: 'https://mercado.patria.org',
         },
       ];
 
@@ -324,7 +413,12 @@
       ];
 
       // Funciones de utilidad
-      const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+      const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        document.documentElement.classList.remove(`theme-${theme}`);
+        document.documentElement.classList.add(`theme-${newTheme}`);
+      };
 
       const getTimeDisplay = (timestamp) => {
         const now = new Date();
@@ -343,6 +437,31 @@
         setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, read: true } : m)));
       };
 
+      const handleFollowToggle = (postId) => {
+        setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, isFollowing: !p.isFollowing } : p)));
+        setNews((prev) => prev.map((n) => (n.id === postId ? { ...n, isFollowing: !n.isFollowing } : n)));
+      };
+
+      const handleLike = (postId, isNews = false) => {
+        if (isNews) {
+          setNews((prev) => prev.map((n) => (n.id === postId ? { ...n, likes: n.likes + 1 } : n)));
+        } else {
+          setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, likes: p.likes + 1 } : p)));
+        }
+      };
+
+      const handleDislike = (postId, isNews = false) => {
+        if (isNews) {
+          setNews((prev) => prev.map((n) => (n.id === postId ? { ...n, dislikes: n.dislikes + 1 } : n)));
+        } else {
+          setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, dislikes: p.dislikes + 1 } : p)));
+        }
+      };
+
+      const handleReport = (postId, isNews = false) => {
+        alert(`Contenido ${postId} reportado para moderación.`);
+      };
+
       const handleOutsideClick = (e) => {
         if (!e.target.closest('.dropdown')) setIsDropdownOpen(false);
         if (!e.target.closest('.more-dropdown')) setIsMoreDropdownOpen(false);
@@ -354,6 +473,7 @@
       };
 
       useEffect(() => {
+        document.documentElement.classList.add(`theme-${theme}`);
         document.addEventListener('click', handleOutsideClick);
         return () => document.removeEventListener('click', handleOutsideClick);
       }, []);
@@ -408,16 +528,35 @@
               {filter}
             </button>
           ))}
+          <select
+            className="px-3 py-1 rounded-full text-sm bg-patria-box text-patria-title"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            aria-label="Ordenar publicaciones"
+          >
+            <option value="cronológico">Cronológico</option>
+            <option value="relevancia">Relevancia</option>
+          </select>
         </div>
       );
 
-      // Filtrar publicaciones según el filtro activo
+      // Filtrar y ordenar publicaciones
       const filteredPosts = activeFilter === 'Todos'
-        ? posts
-        : posts.filter(post => post.category === activeFilter || (post.type === 'clip' && activeFilter === 'Comunidad'));
+        ? [...posts, ...news]
+        : [...posts, ...news].filter(item => item.category === activeFilter || (item.type === 'clip' && activeFilter === 'Comunidad'));
+
+      const sortedPosts = filteredPosts.sort((a, b) => {
+        if (sortOrder === 'cronológico') {
+          return b.timestamp - a.timestamp;
+        } else {
+          const relevanceA = (a.likes || 0) + (a.comments || 0) * 2;
+          const relevanceB = (b.likes || 0) + (b.comments || 0) * 2;
+          return relevanceB - relevanceA;
+        }
+      });
 
       return (
-        <div className={`min-h-screen font-sans theme-${theme}`} role="main">
+        <div className="min-h-screen font-sans" role="main">
           {/* Header (Fijo) */}
           <header className="bg-patria-header p-4 fixed top-0 left-0 right-0 z-20" role="banner">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -464,7 +603,7 @@
                 <div className="relative notification">
                   <button onClick={() => setIsNotificationOpen(!isNotificationOpen)} aria-label="Notificaciones">
                     <svg className={`w-8 h-8 ${isNotificationOpen ? 'text-patria-button' : 'text-patria-icon-header'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v W-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                     {notifications.filter(n => !n.read).length > 0 && (
                       <span className="absolute -top-1 -right-1 bg-patria-button text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -579,9 +718,9 @@
                   <h2 className="text-patria-sidebar-title font-bold mb-4">{activeSection}</h2>
                   <div className="flex items-center p-2 rounded mb-2">
                     <div className="w-6 h-6 bg-gray-300 rounded-full mr-2"></div>
-                    <span className="text-patria-sidebar-title font-bold italic">Juan Pérez</span>
+                    <span className="text-patria-sidebar-title font-bold italic">{userProfile.name}</span>
                   </div>
-                  {subsections[activeSection].map((subsection) => (
+                  {filteredSubsections[activeSection].map((subsection) => (
                     <button
                       key={subsection.name}
                       className={`flex items-center p-2 rounded mb-2 w-full text-left ${selectedSubsection === subsection.name ? 'bg-patria-sidebar-selected' : ''}`}
@@ -598,7 +737,7 @@
                 <div className="mt-auto sidebar-footer text-patria-title">
                   <div className="flex flex-wrap gap-x-2 gap-y-1 mb-2">
                     {footerLinks.map((link) => (
-                      <a key={link.name} href="#" className="hover:underline">
+                      <a key={link.name} href="#" className={`hover:underline ${link.name === 'Publicidad' ? 'text-patria-verified' : ''}`}>
                         {link.name}
                       </a>
                     ))}
@@ -628,288 +767,395 @@
                       )}
                     </div>
                   </div>
-                  <p>Patria © 2025</p>
+                  <p>Patria © <span id="year"></span></p>
+                  <script>
+                    const currentYear = new Date().getFullYear();
+                    document.getElementById('year').textContent = currentYear;
+                  </script>
                 </div>
               </div>
             </aside>
+{/* Main Content (Scrollable) */}
+<main className="flex-1 px-4 md:ml-60 lg:mr-60 overflow-y-auto bg-patria-bg" role="main">
+  {/* Protección Social Card */}
+  <section className="bg-patria-social text-white rounded-lg p-6 mb-6 shadow-patria">
+    <h2 className="text-2xl font-bold mb-2">Protección Social</h2>
+    <p className="mb-4">Consulta tus bonos, subsidios y beneficios asignados.</p>
+    <button className="bg-patria-button text-white px-4 py-2 rounded hover-patria-button flex items-center">
+      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      Ver Detalles
+    </button>
+  </section>
 
-            {/* Main Content (Scrollable) */}
-            <main className="flex-1 px-4 md:ml-60 lg:mr-60 overflow-y-auto bg-patria-bg" role="main">
-              {/* Protección Social Card */}
-              <section className="bg-patria-social text-white rounded-lg p-6 mb-6 shadow-patria">
-                <h2 className="text-2xl font-bold mb-2">Protección Social</h2>
-                <p className="mb-4">Consulta tus bonos, subsidios y beneficios asignados.</p>
-                <button className="bg-patria-button text-white px-4 py-2 rounded hover-patria-button flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Ver Detalles
-                </button>
-              </section>
+  {/* Unified Feed */}
+  <section className="mb-6">
+    <h2 className="text-xl font-semibold mb-4 text-patria-title">Tu Comunidad</h2>
+    <div className="bg-patria-box rounded-lg p-4 mb-4 shadow-patria">
+      <textarea
+        className="w-full p-2 border rounded mb-2 text-patria-title cursor-pointer bg-patria-box"
+        placeholder="¿Qué tienes para compartir con tu comunidad?"
+        onClick={() => setIsCreatePostOpen(true)}
+        readOnly
+        aria-label="Crear nueva publicación"
+      ></textarea>
+    </div>
 
-              {/* Unified Feed */}
-              <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-4 text-patria-title">Tu Comunidad</h2>
-                <div className="bg-patria-box rounded-lg p-4 mb-4 shadow-patria">
-                  <textarea
-                    className="w-full p-2 border rounded mb-2 text-patria-title cursor-pointer bg-patria-box"
-                    placeholder="¿Qué tienes para compartir con tu comunidad?"
-                    onClick={() => setIsCreatePostOpen(true)}
-                    readOnly
-                    aria-label="Crear nueva publicación"
-                  ></textarea>
-                </div>
+    {/* Filtros */}
+    <Filters />
 
-                {/* Filtros */}
-                <Filters />
-
-                {/* Stories Carousel */}
-                <div className="flex space-x-4 mb-6 overflow-x-auto scrollbar-hidden bg-patria-bg p-4 rounded-lg">
-                  {stories.map((story) => (
-                    <div key={story.id} className="relative flex-shrink-0">
-                      <div className={`w-16 h-16 rounded-full ${story.viewed ? 'border-2 border-gray-300' : 'border-2 border-patria-button'}`}>
-                        <div className="w-full h-full bg-gray-300 rounded-full"></div>
-                      </div>
-                      {story.user === 'Tú' && (
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-6 bg-patria-button rounded-full flex items-center justify-center border-2 border-patria-contrast">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                          </svg>
-                        </div>
-                      )}
-                      <p className="text-xs text-center mt-1 text-patria-title">{story.user}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Suggested Contacts Carousel */}
-                <div className="mb-6 bg-patria-bg p-4 rounded-lg">
-                  <h3 className="text-patria-title font-bold mb-2 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Personas que quizá conozcas
-                  </h3>
-                  <Carousel
-                    items={suggestedContacts}
-                    offset={suggestedOffset}
-                    setOffset={setSuggestedOffset}
-                    itemWidth={160}
-                    visibleItems={4}
-                    renderItem={(contact) => (
-                      <div key={contact.id} className="w-40 flex-shrink-0 border border-patria-contrast rounded-lg">
-                        <div className="w-full h-32 bg-gray-300 rounded-t-lg"></div>
-                        <div className="p-2">
-                          <p className="text-patria-title font-bold text-sm">{contact.name}</p>
-                          <p className="text-sm text-patria-sidebar-icon">{contact.mutualFriends} amigos en común</p>
-                          <button className="w-full bg-patria-button text-white px-2 py-1 rounded text-sm flex items-center justify-center mt-2">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                            Agregar a amigos
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-
-                {/* Posts */}
-                {filteredPosts.map((post, index) => (
-                  <React.Fragment key={post.id}>
-                    {post.type === 'clip' ? (
-                      <div className="mb-6 bg-patria-bg p-4 rounded-lg">
-                        <h3 className="text-patria-title font-bold mb-2 flex items-center">
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                          </svg>
-                          Clips
-                        </h3>
-                        <Carousel
-                          items={clips}
-                          offset={clipsOffset}
-                          setOffset={setClipsOffset}
-                          itemWidth={192}
-                          visibleItems={4}
-                          renderItem={(clip) => (
-                            <div key={clip.id} className="w-48 flex-shrink-0">
-                              <div className="w-full h-64 bg-gray-300 rounded-lg"></div>
-                              <p className="text-sm text-patria-title mt-2">{clip.content}</p>
-                              <p className="text-xs text-patria-sidebar-icon">{getTimeDisplay(clip.timestamp)}</p>
-                              <a href={clip.link} className="text-patria-button text-sm hover:underline">{clip.link}</a>
-                            </div>
-                          )}
-                        />
-                      </div>
-                    ) : (
-                      <div className="bg-patria-box rounded-lg p-4 mb-4 shadow-patria">
-                        <div className="flex items-center mb-2">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full mr-2"></div>
-                          <div>
-                            <p className="text-patria-title font-bold">{post.user}</p>
-                            <div className="flex items-center space-x-2">
-                              {post.type === 'ad' && (
-                                <p className="text-xs text-patria-verified">Publicidad</p>
-                              )}
-                              <p className="text-xs text-patria-sidebar-icon">
-                                {getTimeDisplay(post.timestamp)} {post.category} {post.tags.join(' ')}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-patria-title mb-2">{post.content}</p>
-                        {(post.media || post.type === 'ad') && (
-                          <div className="w-full h-48 bg-gray-300 rounded-lg mb-2"></div>
-                        )}
-                        {post.type === 'ad' && (
-                          <div className="mb-2">
-                            <a href={post.link} className="text-patria-button text-sm hover:underline">{post.link}</a>
-                            <div className="flex items-center mt-2">
-                              <p className="text-patria-title text-sm flex-1">{post.detailedContent}</p>
-                              <button className="bg-patria-button text-white px-4 py-2 rounded hover-patria-button ml-auto">
-                                {post.cta}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                        <div className="flex space-x-4">
-                          <button className="flex items-center text-patria-title" aria-label="Me gusta">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                            {post.likes || 0}
-                          </button>
-                          <button className="flex items-center text-patria-title" aria-label="Comentar">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                            </svg>
-                            {post.comments || 0}
-                          </button>
-                          <button className="flex items-center text-patria-title" aria-label="Compartir">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                            </svg>
-                            Compartir
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </section>
-            </main>
-
-            {/* Sidebar Derecha (Fija) */}
-            <aside className="hidden lg:block w-64 bg-patria-sidebar p-4 fixed top-20 right-0 bottom-0 overflow-y-auto" role="complementary">
-              {/* Publicidad */}
-              <div className="mb-4 pb-4 border-b border-patria-divider">
-                <h3 className="text-patria-title font-bold mb-2 flex items-center">
-                  <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.379c.484 0 .951.192 1.293.535M12 19.24V5.882a1.76 1.76 0 013.417-.592l2.147 6.15M18 13a3 3 0 01-3 3m-3 0a3 3 0 01-3-3" />
-                  </svg>
-                  Publicidad
-                </h3>
-                {ads.map((ad) => (
-                  <div key={ad.id} className="rounded-lg p-3 mb-3 flex items-start bg-patria-box">
-                    <img
-                      src={ad.image}
-                      alt={ad.title}
-                      className="w-16 h-24 object-cover rounded mr-2"
-                      onError={(e) => (e.target.src = 'https://via.placeholder.com/64x96')}
-                    />
-                    <div>
-                      <p className="text-patria-title font-bold text-sm">{ad.title}</p>
-                      <p className="text-sm text-patria-sidebar-icon line-clamp-2">{ad.description}</p>
-                      <a href={ad.link} className="text-patria-button text-sm hover:underline">{ad.link}</a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Solicitudes de Amistad */}
-              <div className="mb-4 pb-4 border-b border-patria-divider">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-patria-title font-bold flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    Solicitudes de Amistad
-                  </h3>
-                  <a href="#" className="text-patria-button text-sm hover:underline flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Ver todas
-                  </a>
-                </div>
-                <div className="rounded-lg p-3 mt-2 bg-patria-box">
-                  <p className="text-patria-title font-bold">Luis Martínez</p>
-                  <p className="text-sm text-patria-sidebar-icon">1 amigo en común</p>
-                  <div className="flex space-x-2 mt-2">
-                    <button className="bg-patria-button text-white px-3 py-1 rounded text-sm hover-patria-button flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Aceptar
-                    </button>
-                    <button className="bg-patria-delete text-white px-3 py-1 rounded text-sm hover-patria-delete flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Cumpleaños */}
-              <div className="mb-4 pb-4 border-b border-patria-divider">
-                <h3 className="text-patria-title font-bold mb-2 flex items-center">
-                  <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
-                  </svg>
-                  Cumpleaños
-                </h3>
-                <div className="rounded-lg p-3 bg-patria-box">
-                  <p className="text-patria-title font-bold">Ana López</p>
-                  <p className="text-sm text-patria-sidebar-icon">Hoy es su cumpleaños</p>
-                </div>
-              </div>
-
-              {/* Contactos */}
-              <div className="mb-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-patria-title font-bold flex items-center">
-                    <svg className="w-4 h-4 mr-1 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Contactos
-                  </h3>
-                  <a href="#" className="text-patria-button text-sm hover:underline flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Ver todos
-                  </a>
-                </div>
-                {contacts.map((contact) => (
-                  <div key={contact.id} className="flex items-center p-3 rounded-lg mt-2 bg-patria-box">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
-                    <p className="text-patria-title font-bold">{contact.name}</p>
-                    <div className={`w-2 h-2 rounded-full ml-auto ${contact.online ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                  </div>
-                ))}
-              </div>
-            </aside>
+    {/* Stories Carousel */}
+    <div className="flex space-x-4 mb-6 overflow-x-auto scrollbar-hidden bg-patria-bg p-4 rounded-lg">
+      {stories.map((story) => (
+        <div key={story.id} className="relative flex-shrink-0">
+          <div className={`w-16 h-16 rounded-full ${story.viewed ? 'border-2 border-gray-300' : 'border-2 border-patria-button'}`}>
+            <div className="w-full h-full bg-gray-300 rounded-full"></div>
           </div>
+          {story.user === 'Tú' && (
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-6 bg-patria-button rounded-full flex items-center justify-center border-2 border-patria-contrast">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          )}
+          <p className="text-xs text-center mt-1 text-patria-title">{story.user}</p>
         </div>
-      );
-    };
+      ))}
+    </div>
 
-    // Renderizado
-    ReactDOM.render(<SocialHome />, document.getElementById('root'));
-  </script>
+    {/* Suggested Contacts Carousel */}
+    <div className="mb-6 bg-patria-bg p-4 rounded-lg">
+      <h3 className="text-patria-title font-bold mb-2 flex items-center">
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        Personas que quizá conozcas
+      </h3>
+      <Carousel
+        items={suggestedContacts}
+        offset={suggestedOffset}
+        setOffset={setSuggestedOffset}
+        itemWidth={160}
+        visibleItems={4}
+        renderItem={(contact) => (
+          <div key={contact.id} className="w-40 flex-shrink-0 border border-patria-contrast rounded-lg">
+            <div className="w-full h-32 bg-gray-300 rounded-t-lg"></div>
+            <div className="p-2">
+              <p className="text-patria-title font-bold text-sm">{contact.name}</p>
+              <p className="text-sm text-patria-sidebar-icon">{contact.mutualFriends} amigos en común</p>
+              <button className="w-full bg-patria-button text-white px-2 py-1 rounded text-sm flex items-center justify-center mt-2 hover-patria-button">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Añadir
+              </button>
+            </div>
+          </div>
+        )}
+      />
+    </div>
+
+    {/* Posts */}
+    {sortedPosts.map((post, index) => (
+      <React.Fragment key={post.id}>
+        {post.type === 'clip' ? (
+          <div className="mb-6 bg-patria-bg p-4 rounded-lg">
+            <h3 className="text-patria-title font-bold mb-2 flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Clips
+            </h3>
+            <Carousel
+              items={clips}
+              offset={clipsOffset}
+              setOffset={setClipsOffset}
+              itemWidth={160}
+              visibleItems={4}
+              renderItem={(clip) => (
+                <div key={clip.id} className="w-40 flex-shrink-0 relative">
+                  <div className="w-full h-64 bg-gray-300 rounded-lg flex items-center justify-center">
+                    <svg className="w-12 h-12 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-patria-title mt-2 truncate">{clip.content}</p>
+                </div>
+              )}
+            />
+          </div>
+        ) : (
+          <div className="bg-patria-box rounded-lg p-4 mb-4 shadow-patria">
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 bg-gray-300 rounded-full mr-2"></div>
+              <div>
+                <div className="flex items-center">
+                  <p className="text-patria-title font-bold">{post.user}</p>
+                  {post.tags.includes('✅ Verificada') && (
+                    <svg className="w-4 h-4 text-patria-verified ml-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+                <p className="text-patria-sidebar-icon text-xs">
+                  {getTimeDisplay(post.timestamp)} • {post.location} • {post.category}
+                  {post.tags.length > 0 && ` • ${post.tags.join(', ')}`}
+                </p>
+              </div>
+              <div className="ml-auto relative more-options">
+                <button
+                  onClick={() => setIsMoreOptionsOpen(isMoreOptionsOpen === post.id ? false : post.id)}
+                  aria-label="Más opciones"
+                >
+                  <svg className="w-5 h-5 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                  </svg>
+                </button>
+                {isMoreOptionsOpen === post.id && (
+                  <div className="absolute right-0 mt-2 w-48 bg-patria-box rounded-lg shadow-patria z-10">
+                    <button
+                      className="block w-full text-left px-4 py-2 text-patria-dropdown-option hover:bg-patria-sidebar-selected"
+                      onClick={() => handleFollowToggle(post.id)}
+                    >
+                      {post.isFollowing ? 'Dejar de seguir' : 'Seguir'}
+                    </button>
+                    <button
+                      className="block w-full text-left px-4 py-2 text-patria-dropdown-option hover:bg-patria-sidebar-selected"
+                      onClick={() => handleReport(post.id, post.summary !== undefined)}
+                    >
+                      Reportar contenido
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-patria-title mb-2">
+              {post.summary || post.content}
+              {post.content && post.summary && (
+                <button
+                  className="text-patria-dropdown-option text-sm ml-1"
+                  onClick={() => alert(post.content)}
+                >
+                  Ver más
+                </button>
+              )}
+            </p>
+            {post.media && (
+              <div className="mb-2">
+                {post.media.type === 'image' ? (
+                  <img
+                    src={post.media.url}
+                    alt="Contenido de la publicación"
+                    className="w-full rounded-lg"
+                    onError={(e) => (e.target.src = 'https://via.placeholder.com/600x400')}
+                  />
+                ) : (
+                  <video
+                    src={post.media.url}
+                    controls
+                    className="w-full rounded-lg"
+                    onError={(e) => (e.target.src = 'https://via.placeholder.com/600x400')}
+                  />
+                )}
+              </div>
+            )}
+            {post.link && (
+              <a
+                href={post.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-patria-dropdown-option underline mb-2 block"
+              >
+                {post.cta || 'Ver más'}
+              </a>
+            )}
+            <div className="flex justify-between items-center text-patria-sidebar-icon text-sm mb-2">
+              <span>{post.likes} Me gusta</span>
+              <span>{post.comments} Comentarios</span>
+            </div>
+            <div className="flex space-x-2 border-t border-patria-divider pt-2">
+              <button
+                className="flex-1 bg-patria-reaction text-patria-title py-2 rounded-lg flex items-center justify-center reaction-button hover-patria-reaction"
+                onClick={() => handleLike(post.id, post.summary !== undefined)}
+                aria-label="Me gusta"
+              >
+                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m0-16l3.761.94c.159.04.322.06.485.06H15.263a2 2 0 011.789 1.106l3.5 7A2 2 0 0118.764 14H14m-7 0v6m0-6H5a2 2 0 00-2 2v2a2 2 0 002 2h2" />
+                </svg>
+                Me gusta
+              </button>
+              <button
+                className="flex-1 bg-patria-reaction text-patria-title py-2 rounded-lg flex items-center justify-center reaction-button hover-patria-reaction"
+                onClick={() => alert('Función de comentarios en desarrollo')}
+                aria-label="Comentar"
+              >
+                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                Comentar
+              </button>
+              <button
+                className="flex-1 bg-patria-reaction text-patria-title py-2 rounded-lg flex items-center justify-center reaction-button hover-patria-reaction"
+                onClick={() => alert('Función de compartir en desarrollo')}
+                aria-label="Compartir"
+              >
+                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Compartir
+              </button>
+            </div>
+          </div>
+        )}
+        {(index === 2 || index === 5) && (
+          <div className="bg-patria-box rounded-lg p-4 mb-4 shadow-patria">
+            <h3 className="text-patria-title font-bold mb-2">Anuncio</h3>
+            <img
+              src={ads[index % ads.length].image}
+              alt={ads[index % ads.length].title}
+              className="w-full rounded-lg mb-2"
+              onError={(e) => (e.target.src = 'https://via.placeholder.com/600x200')}
+            />
+            <p className="text-patria-title font-bold">{ads[index % ads.length].title}</p>
+            <p className="text-patria-sidebar-icon text-sm mb-2">{ads[index % ads.length].description}</p>
+            <a
+              href={ads[index % ads.length].link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-patria-button text-white px-4 py-2 rounded hover-patria-button"
+            >
+              Ver más
+            </a>
+          </div>
+        )}
+      </React.Fragment>
+    ))}
+
+    {/* Create Post Modal */}
+    {isCreatePostOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 create-post">
+        <div className="bg-patria-box rounded-lg p-6 w-full max-w-md">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-patria-title font-bold">Crear publicación</h2>
+            <button
+              onClick={() => setIsCreatePostOpen(false)}
+              aria-label="Cerrar"
+            >
+              <svg className="w-6 h-6 text-patria-sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 bg-gray-300 rounded-full mr-2"></div>
+            <div>
+              <p className="text-patria-title font-bold">{userProfile.name}</p>
+              <div className="relative audience">
+                <button
+                  className="text-patria-dropdown-title text-sm flex items-center"
+                  onClick={() => setIsAudienceOpen(!isAudienceOpen)}
+                >
+                  {audience}
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isAudienceOpen && (
+                  <div className="absolute mt-2 w-64 bg-patria-box rounded-lg shadow-patria z-10">
+                    {audienceOptions.map((option) => (
+                      <button
+                        key={option.name}
+                        className="block w-full text-left px-4 py-2 text-patria-dropdown-option hover:bg-patria-sidebar-selected"
+                        onClick={() => {
+                          setAudience(option.name);
+                          setIsAudienceOpen(false);
+                        }}
+                      >
+                        <p className="font-bold">{option.name}</p>
+                        <p className="text-sm">{option.desc}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <textarea
+            className="w-full p-2 border rounded mb-2 text-patria-title bg-patria-box"
+            placeholder="¿Qué tienes para compartir con tu comunidad?"
+            rows="4"
+            aria-label="Contenido de la publicación"
+          ></textarea>
+          <input
+            type="text"
+            className="w-full p-2 border rounded mb-2 text-patria-title bg-patria-box"
+            placeholder="Añadir hashtags (#CLAP, #Salud)"
+            aria-label="Hashtags"
+          />
+          <input
+            type="text"
+            className="w-full p-2 border rounded mb-2 text-patria-title bg-patria-box"
+            placeholder="Etiquetar ubicación o entidad (CLAP, comunidad, calle)"
+            aria-label="Ubicación o entidad"
+          />
+          <input
+            type="file"
+            accept="image/*,video/*"
+            className="w-full p-2 border rounded mb-2 text-patria-title bg-patria-box"
+            aria-label="Subir multimedia"
+          />
+          <button
+            className="w-full bg-patria-button text-white py-2 rounded hover-patria-button"
+            onClick={() => {
+              setIsCreatePostOpen(false);
+              alert('Publicación creada (simulada).');
+            }}
+          >
+            Publicar
+          </button>
+        </div>
+      </div>
+    )}
+  </section>
+</main>
+
+{/* Sidebar Derecha (Fija) */}
+<aside className="hidden lg:block w-60 bg-patria-sidebar p-4 fixed top-20 right-0 bottom-0" role="complementary">
+  <h2 className="text-patria-sidebar-title font-bold mb-4">Contactos</h2>
+  {contacts.map((contact) => (
+    <div key={contact.id} className="flex items-center p-2 rounded mb-2">
+      <div className="w-8 h-8 bg-gray-300 rounded-full mr-2 relative">
+        {contact.online && (
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-patria-contrast"></div>
+        )}
+      </div>
+      <span className="text-patria-sidebar-title">{contact.name}</span>
+    </div>
+  ))}
+  <h2 className="text-patria-sidebar-title font-bold mb-4 mt-6">Verificación</h2>
+  <div className="bg-patria-box p-4 rounded-lg shadow-patria">
+    <p className="text-patria-title mb-2">Verifica tu cuenta</p>
+    <input
+      type="text"
+      className="w-full p-2 border rounded mb-2 text-patria-title bg-patria-box"
+      placeholder="Cédula de Identidad"
+      defaultValue={userProfile.cedula}
+      aria-label="Cédula de Identidad"
+    />
+    <button className="w-full bg-patria-button text-white py-2 rounded hover-patria-button">
+      Verificar
+    </button>
+  </div>
+</aside>
+</div>
+</div>
+);
+};
+
+// Renderizar la aplicación
+ReactDOM.render(<SocialHome />, document.getElementById('root'));
+</script>
 </body>
 </html>
