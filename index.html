@@ -1,235 +1,262 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plataforma Patria</title>
-  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React CDNs -->
-  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7/babel.min.js"></script>
-  <style>
-    body { font-size: 10px; }
-    .protection-card { background-color: #ff4d4d; color: #ffffff; }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.20/Babel.min.js"></script>
 </head>
 <body class="bg-[#f6f6f6]">
   <div id="root"></div>
   <script type="text/babel">
+    // Language translations
     const translations = {
       es: {
-        home: 'Inicio',
-        news: 'Noticias Oficiales',
-        social: 'Red Social',
-        dynamic: 'Secciones Dinámicas',
-        community: '1x10 Comunidad',
-        wallet: 'Waku Pay',
-        health: 'Salud',
-        directory: 'Directorio',
-        alerts: 'Alertas y Estadísticas',
-        services: 'Trámites y Servicios',
-        profile: 'Perfil',
-        market: 'Market Social',
-        language: 'Idioma',
-        birthdays: 'Hoy es el cumpleaños de:',
-        suggestions: 'Personas que quizás conozcas',
-        contacts: 'Contactos',
-        ads: 'Publicidad'
+        home: "Inicio",
+        news: "Noticias Oficiales",
+        social: "Red Social",
+        profile: "Perfil",
+        birthdays: "Cumpleaños",
+        suggestions: "Personas que quizás conozcas",
+        contacts: "Contactos",
+        language: "Idioma",
       },
-      wayuunaiki: { home: 'Jepia', language: 'Süchiki' /* Add more */ },
-      pemon: { home: 'Inicio', language: 'Idioma' /* Add more */ },
-      en: { home: 'Home', language: 'Language' },
-      ru: { home: 'Главная', language: 'Язык' },
-      ar: { home: 'الرئيسية', language: 'اللغة' },
-      zh: { home: '首页', language: '语言' }
+      wayuunaiki: { home: "Jepirra", news: "Waneepia", social: "Waya", profile: "Aipirua" },
+      pemon: { home: "Panton", news: "Yekuana", social: "Kumana", profile: "Enek" },
+      en: { home: "Home", news: "Official News", social: "Social Network", profile: "Profile" },
+      ru: { home: "Главная", news: "Официальные новости", social: "Социальная сеть", profile: "Профиль" },
+      ar: { home: "الرئيسية", news: "الأخبار الرسمية", social: "الشبكة الاجتماعية", profile: "الملف الشخصي" },
+      zh: { home: "首页", news: "官方新闻", social: "社交网络", profile: "个人资料" },
     };
 
-    const App = () => {
-      const [language, setLanguage] = React.useState('es');
-      const [activeSection, setActiveSection] = React.useState('home');
-      const [showMessages, setShowMessages] = React.useState(false);
+    // Main App Component
+    function App() {
+      const [language, setLanguage] = React.useState("es");
+      const [posts, setPosts] = React.useState([]);
+      const [news, setNews] = React.useState([]);
+      const [showMessagePopup, setShowMessagePopup] = React.useState(false);
       const [showBirthdayPopup, setShowBirthdayPopup] = React.useState(false);
 
+      // Fetch data on mount
+      React.useEffect(() => {
+        axios.get("/api/news").then((res) => setNews(res.data));
+        axios.get("/api/posts").then((res) => setPosts(res.data));
+      }, []);
+
       const t = translations[language];
-      const sections = [
-        { id: 'home', icon: '🏠', label: t.home },
-        { id: 'news', icon: '📰', label: t.news },
-        { id: 'social', icon: '💬', label: t.social },
-        { id: 'dynamic', icon: '🎯', label: t.dynamic },
-        { id: 'community', icon: '🔷', label: t.community },
-        { id: 'wallet', icon: '💸', label: t.wallet },
-        { id: 'health', icon: '🩺', label: t.health },
-        { id: 'directory', icon: '📋', label: t.directory },
-        { id: 'alerts', icon: '🚨', label: t.alerts },
-        { id: 'services', icon: '📑', label: t.services },
-        { id: 'profile', icon: '👤', label: t.profile },
-        { id: 'market', icon: '🛒', label: t.market }
-      ];
 
       return (
         <div className="min-h-screen flex flex-col">
           {/* Header */}
-          <header className="bg-[#e11a1d] text-white p-2 fixed w-full top-0 z-10 flex justify-between items-center">
-            <div className="flex items-center">
-              <input type="text" placeholder="Buscar..." className="p-1 rounded bg-[#df1916] text-white placeholder-white" />
-            </div>
-            <div className="flex space-x-2">
-              <button className="p-2 bg-[#e21a1d] hover:bg-[#b4141e] rounded">🏠</button>
-              <button className="p-2 bg-[#e21a1d] hover:bg-[#b4141e] rounded">👤</button>
-              <button className="p-2 bg-[#e21a1d] hover:bg-[#b4141e] rounded">🔔</button>
-              <select
-                className="p-1 bg-[#df1a1d] text-white rounded"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                <option value="es">Español</option>
-                <option value="wayuunaiki">Wayuunaiki</option>
-                <option value="pemon">Pemón</option>
-                <option value="en">English</option>
-                <option value="ru">Русский</option>
-                <option value="ar">العربية</option>
-                <option value="zh">中文</option>
-              </select>
+          <header className="bg-[#e11a1d] text-white fixed top-0 w-full z-10 shadow">
+            <div className="max-w-7xl mx-auto flex items-center justify-between py-2 px-4">
+              <div className="flex items-center">
+                <h1 className="text-xl font-bold">Patria</h1>
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  className="ml-4 p-2 rounded-full text-black"
+                />
+              </div>
+              <div className="flex space-x-4">
+                <button className="hover:bg-[#b4141e] p-2 rounded">Inicio</button>
+                <button className="hover:bg-[#b4141e] p-2 rounded">Perfil</button>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="bg-[#df1916] text-white p-2 rounded"
+                >
+                  <option value="es">Español</option>
+                  <option value="wayuunaiki">Wayuunaiki</option>
+                  <option value="pemon">Pemón</option>
+                  <option value="en">English</option>
+                  <option value="ru">Русский</option>
+                  <option value="ar">العربية</option>
+                  <option value="zh">中文</option>
+                </select>
+              </div>
             </div>
           </header>
 
           {/* Main Content */}
-          <div className="flex mt-12">
+          <div className="max-w-7xl mx-auto mt-16 flex flex-row space-x-4 px-4">
             {/* Left Sidebar */}
-            <div className="w-1/4 bg-[#f6f6f6] p-4">
-              {sections.map((section) => (
-                <div
-                  key={section.id}
-                  className={`flex items-center p-2 cursor-pointer ${activeSection === section.id ? 'bg-[#e9e9e9]' : ''}`}
-                  onClick={() => setActiveSection(section.id)}
-                >
-                  <span className={`text-2xl ${activeSection === section.id ? 'text-[#b41414]' : 'text-[#919191]'}`}>
-                    {section.icon}
-                  </span>
-                  <span className={`ml-2 text-[#2a2a2a] ${activeSection === section.id ? 'font-bold' : ''}`}>
-                    {section.label}
-                  </span>
+            <aside className="w-1/4 bg-[#f6f6f6] sticky top-16">
+              <ul className="space-y-2 p-4">
+                <li className="flex items-center p-2 hover:bg-[#e9e9e9] rounded">
+                  <span className="text-[#b41414] mr-2">🏠</span>
+                  <span className="text-[#2a2a2a]">{t.home}</span>
+                </li>
+                <li className="flex items-center p-2 hover:bg-[#e9e9e9] rounded">
+                  <span className="text-[#919191] mr-2">📰</span>
+                  <span className="text-[#2a2a2a]">{t.news}</span>
+                </li>
+                <li className="flex items-center p-2 hover:bg-[#e9e9e9] rounded">
+                  <span className="text-[#919191] mr-2">💬</span>
+                  <span className="text-[#2a2a2a]">{t.social}</span>
+                </li>
+                <li className="flex items-center p-2 hover:bg-[#e9e9e9] rounded">
+                  <span className="text-[#919191] mr-2">👤</span>
+                  <span className="text-[#2a2a2a]">{t.profile}</span>
+                </li>
+              </ul>
+            </aside>
+
+            {/* Central Feed */}
+            <main className="w-2/4 space-y-4">
+              {/* Tarjeta de Protección Social */}
+              <div className="bg-[#FFD700] p-4 rounded shadow-[#e2e2e2] shadow">
+                <h2 className="text-[#2a2a2a] font-bold">Tarjeta de Protección Social</h2>
+                <p>Accede a beneficios personalizados según tu perfil.</p>
+              </div>
+
+              {/* News Feed */}
+              {news.map((item) => (
+                <div key={item.id} className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
+                  <img src={item.image} alt="News" className="w-full h-40 object-cover rounded" />
+                  <h3 className="text-[#2a2a2a] font-bold">{item.title}</h3>
+                  <p className="text-[#2a2a2a]">{item.summary}</p>
+                  <span className="text-[#b31611]">{item.category}</span>
                 </div>
               ))}
-            </div>
 
-            {/* Center Feed */}
-            <div className="w-2/4 p-4">
-              <div className="bg-[#ffffff] shadow-[#e2e2e2] p-4 rounded mb-4">
-                <h2 className="text-[#2a2a2a] font-bold">Crear Publicación</h2>
-                <textarea className="w-full p-2 border rounded" placeholder="¿Qué tienes en mente?"></textarea>
-                <button className="mt-2 p-2 bg-[#e11a1d] text-white rounded hover:bg-[#b4141e]">Publicar</button>
-              </div>
-              <div className="bg-[#ffffff] shadow-[#e2e2e2] p-4 rounded mb-4 protection-card">
-                <h2 className="font-bold">Tarjeta de Protección Social</h2>
-                <p>Accede a beneficios exclusivos y programas sociales.</p>
-              </div>
-              <div className="bg-[#ffffff] shadow-[#e2e2e2] p-4 rounded">
-                <h2 className="text-[#2a2a2a] font-bold">Noticias Oficiales</h2>
-                <div className="border-t pt-2">
-                  <img src="https://via.placeholder.com/150" alt="Noticia" className="w-24 float-left mr-2" />
-                  <h3 className="font-bold">Titular de Noticia</h3>
-                  <p className="text-[#2a2a2a]">Resumen de la noticia...</p>
-                  <span className="text-[#bcbcbc]">Fuente: Oficial</span>
-                  <span className="ml-2 text-red-600">🔴 Urgente</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="w-1/4 p-4">
-              {/* Ads */}
-              <div className="bg-[#ffffff] p-4 mb-4 rounded shadow-[#e2e2e2]">
-                <h3 className="text-[#2a2a2a] font-bold">{t.ads}</h3>
-                <div className="flex items-center mb-2">
-                  <img src="https://via.placeholder.com/50" alt="Ad" className="w-12 mr-2" />
-                  <div>
-                    <h4 className="font-bold">Anuncio 1</h4>
-                    <p className="text-[#2a2a2a]">Descripción breve...</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <img src="https://via.placeholder.com/50" alt="Ad" className="w-12 mr-2" />
-                  <div>
-                    <h4 className="font-bold">Anuncio 2</h4>
-                    <p className="text-[#2a2a2a]">Descripción breve...</p>
-                  </div>
-                </div>
-              </div>
-              {/* Birthdays */}
-              <div className="bg-[#ffffff] p-4 mb-4 rounded shadow-[#e2e2e2]">
-                <h3 className="text-[#2a2a2a] font-bold">{t.birthdays} Juan Pérez</h3>
-                <p className="text-[#2a2a2a] cursor-pointer" onClick={() => setShowBirthdayPopup(true)}>
-                  2 personas más
-                </p>
-                {showBirthdayPopup && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-[#ffffff] p-4 rounded">
-                      <h3>Felicitaciones</h3>
-                      <textarea className="w-full p-2 border rounded" placeholder="Escribe tu mensaje"></textarea>
-                      <button
-                        className="mt-2 p-2 bg-[#e11a1d] text-white rounded hover:bg-[#b4141e]"
-                        onClick={() => setShowBirthdayPopup(false)}
-                      >
-                        Publicar
-                      </button>
+              {/* Social Posts */}
+              {posts.map((post) => (
+                <div key={post.id} className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
+                  <div className="flex items-center">
+                    <img src={post.userAvatar} alt="User" className="w-10 h-10 rounded-full" />
+                    <div className="ml-2">
+                      <p className="text-[#2a2a2a] font-bold">{post.userName}</p>
+                      <p className="text-[#bcbcbc] text-sm">{post.time}</p>
                     </div>
                   </div>
-                )}
+                  <p className="mt-2 text-[#2a2a2a]">{post.content}</p>
+                  <div className="flex space-x-4 mt-2">
+                    <button className="text-[#919191]">Like</button>
+                    <button className="text-[#919191]">Comentar</button>
+                  </div>
+                </div>
+              ))}
+            </main>
+
+            {/* Right Sidebar */}
+            <aside className="w-1/4 sticky top-16">
+              {/* Ads */}
+              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow mb-4">
+                <h3 className="text-[#2a2a2a] font-bold">Publicidad</h3>
+                <div className="flex items-center mt-2">
+                  <img src="https://via.placeholder.com/50" alt="Ad" className="w-12 h-12" />
+                  <div className="ml-2">
+                    <p className="text-[#2a2a2a] font-bold">Producto</p>
+                    <p className="text-[#bcbcbc] text-sm">Descripción breve</p>
+                  </div>
+                </div>
               </div>
+
+              {/* Birthdays */}
+              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow mb-4">
+                <h3 className="text-[#2a2a2a] font-bold">{t.birthdays}</h3>
+                <p className="text-[#2a2a2a]">
+                  Hoy es el cumpleaños de: Juan Pérez
+                  <span
+                    className="text-[#b31611] cursor-pointer"
+                    onClick={() => setShowBirthdayPopup(true)}
+                  >
+                    {" y 2 personas más"}
+                  </span>
+                </p>
+              </div>
+
               {/* Suggestions */}
-              <div className="bg-[#ffffff] p-4 mb-4 rounded shadow-[#e2e2e2]">
+              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow mb-4">
                 <h3 className="text-[#2a2a2a] font-bold">{t.suggestions}</h3>
-                <div className="flex items-center">
-                  <img src="https://via.placeholder.com/50" alt="User" className="w-12 mr-2 rounded-full" />
-                  <div>
-                    <p className="font-bold">María Gómez</p>
-                    <button className="p-1 bg-[#e11a1d] text-white rounded hover:bg-[#b4141e]">Agregar</button>
-                    <button className="p-1 bg-gray-300 text-[#2a2a2a] rounded ml-1">Eliminar</button>
+                <div className="flex items-center mt-2">
+                  <img
+                    src="https://via.placeholder.com/40"
+                    alt="User"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div className="ml-2">
+                    <p className="text-[#2a2a2a]">María López</p>
+                    <button className="text-[#b31611]">Añadir</button>
                   </div>
                 </div>
               </div>
+
               {/* Contacts */}
-              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2]">
+              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
                 <h3 className="text-[#2a2a2a] font-bold">{t.contacts}</h3>
-                <div className="flex items-center">
+                <div className="flex items-center mt-2">
                   <div className="relative">
-                    <img src="https://via.placeholder.com/50" alt="Contact" className="w-12 mr-2 rounded-full" />
-                    <span className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full"></span>
+                    <img
+                      src="https://via.placeholder.com/40"
+                      alt="User"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>
                   </div>
-                  <p>Juan Pérez</p>
+                  <p className="ml-2 text-[#2a2a2a]">Ana Gómez</p>
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
 
-          {/* Messages Button and Popup */}
+          {/* Message Button and Popup */}
           <button
-            className="fixed bottom-4 right-4 p-4 bg-[#e11a1d] text-white rounded-full hover:bg-[#b4141e]"
-            onClick={() => setShowMessages(!showMessages)}
+            className="fixed bottom-4 right-4 bg-[#e11a1d] text-white p-4 rounded-full shadow"
+            onClick={() => setShowMessagePopup(true)}
           >
-            💬
+            Mensajes
           </button>
-          {showMessages && (
-            <div className="fixed bottom-16 right-16 bg-[#ffffff] p-4 rounded shadow-[#e2e2e2]">
+          {showMessagePopup && (
+            <div className="fixed bottom-16 right-16 bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
               <h3 className="text-[#2a2a2a] font-bold">Mensajes</h3>
-              <p className="text-[#2a2a2a]">Chat con Juan Pérez...</p>
-              <textarea className="w-full p-2 border rounded" placeholder="Escribe un mensaje"></textarea>
-              <button className="mt-2 p-2 bg-[#e11a1d] text-white rounded hover:bg-[#b4141e]">Enviar</button>
+              <p className="text-[#2a2a2a]">Aquí irán los mensajes...</p>
+              <button
+                className="text-[#b31611]"
+                onClick={() => setShowMessagePopup(false)}
+              >
+                Cerrar
+              </button>
+            </div>
+          )}
+
+          {/* Birthday Popup */}
+          {showBirthdayPopup && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
+                <h3 className="text-[#2a2a2a] font-bold">Felicitar Cumpleañero</h3>
+                <textarea
+                  className="w-full p-2 border rounded"
+                  placeholder="Escribe tu felicitación..."
+                ></textarea>
+                <button className="bg-[#e11a1d] text-white p-2 rounded">Enviar</button>
+                <button
+                  className="text-[#b31611] ml-2"
+                  onClick={() => setShowBirthdayPopup(false)}
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           )}
 
           {/* Footer */}
-          <footer className="bg-[#f6f6f6] text-[#2a2a2a] p-2 text-center">
-            Plataforma Patria © 2025
+          <footer className="bg-[#f6f6f6] text-[#2a2a2a] text-[10px] py-4 mt-4">
+            <div className="max-w-7xl mx-auto px-4">
+              <p>Plataforma Patria © 2025 | Términos | Privacidad</p>
+            </div>
           </footer>
         </div>
       );
-    };
+    }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    // Render the app
+    ReactDOM.render(<App />, document.getElementById("root"));
   </script>
 </body>
 </html>
