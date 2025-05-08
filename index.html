@@ -24,6 +24,8 @@
         suggestions: "Personas que quizás conozcas",
         contacts: "Contactos",
         language: "Idioma",
+        loading: "Cargando...",
+        error: "Error al cargar datos. Intenta de nuevo.",
       },
       wayuunaiki: { home: "Jepirra", news: "Waneepia", social: "Waya", profile: "Aipirua" },
       pemon: { home: "Panton", news: "Yekuana", social: "Kumana", profile: "Enek" },
@@ -33,6 +35,26 @@
       zh: { home: "首页", news: "官方新闻", social: "社交网络", profile: "个人资料" },
     };
 
+    // Fallback data
+    const fallbackNews = [
+      {
+        id: 1,
+        title: "Nueva política educativa anunciada",
+        summary: "El gobierno lanza un plan para mejorar escuelas.",
+        image: "https://via.placeholder.com/300",
+        category: "Educación",
+      },
+    ];
+    const fallbackPosts = [
+      {
+        id: 1,
+        userName: "Juan Pérez",
+        userAvatar: "https://via.placeholder.com/40",
+        time: "Hace 2 horas",
+        content: "¡Orgulloso de mi comunidad! #CLAP",
+      },
+    ];
+
     // Main App Component
     function App() {
       const [language, setLanguage] = React.useState("es");
@@ -40,14 +62,37 @@
       const [news, setNews] = React.useState([]);
       const [showMessagePopup, setShowMessagePopup] = React.useState(false);
       const [showBirthdayPopup, setShowBirthdayPopup] = React.useState(false);
+      const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState(null);
 
       // Fetch data on mount
       React.useEffect(() => {
-        axios.get("/api/news").then((res) => setNews(res.data));
-        axios.get("/api/posts").then((res) => setPosts(res.data));
+        Promise.all([
+          axios.get("/api/news").catch(() => ({ data: fallbackNews })),
+          axios.get("/api/posts").catch(() => ({ data: fallbackPosts })),
+        ])
+          .then(([newsRes, postsRes]) => {
+            setNews(newsRes.data);
+            setPosts(postsRes.data);
+            setLoading(false);
+          })
+          .catch(() => {
+            setError("No se pudieron cargar los datos.");
+            setNews(fallbackNews);
+            setPosts(fallbackPosts);
+            setLoading(false);
+          });
       }, []);
 
       const t = translations[language];
+
+      if (loading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <p className="text-[#2a2a2a]">{t.loading}</p>
+          </div>
+        );
+      }
 
       return (
         <div className="min-h-screen flex flex-col">
@@ -108,6 +153,11 @@
 
             {/* Central Feed */}
             <main className="w-2/4 space-y-4">
+              {error && (
+                <div className="bg-[#ffffff] p-4 rounded shadow-[#e2e2e2] shadow">
+                  <p className="text-[#b31611]">{t.error}</p>
+                </div>
+              )}
               {/* Tarjeta de Protección Social */}
               <div className="bg-[#FFD700] p-4 rounded shadow-[#e2e2e2] shadow">
                 <h2 className="text-[#2a2a2a] font-bold">Tarjeta de Protección Social</h2>
